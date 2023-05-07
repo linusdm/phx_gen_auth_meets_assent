@@ -6,8 +6,6 @@ defmodule MyAppWeb.UserAuthTest do
   alias MyAppWeb.UserAuth
   import MyApp.AccountsFixtures
 
-  @remember_me_cookie "_my_app_web_user_remember_me"
-
   setup %{conn: conn} do
     conn =
       conn
@@ -35,31 +33,18 @@ defmodule MyAppWeb.UserAuthTest do
       conn = conn |> put_session(:user_return_to, "/hello") |> UserAuth.log_in_user(user)
       assert redirected_to(conn) == "/hello"
     end
-
-    test "writes a cookie if remember_me is configured", %{conn: conn, user: user} do
-      conn = conn |> fetch_cookies() |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
-      assert get_session(conn, :user_token) == conn.cookies[@remember_me_cookie]
-
-      assert %{value: signed_token, max_age: max_age} = conn.resp_cookies[@remember_me_cookie]
-      assert signed_token != get_session(conn, :user_token)
-      assert max_age == 5_184_000
-    end
   end
 
   describe "logout_user/1" do
-    test "erases session and cookies", %{conn: conn, user: user} do
+    test "erases session", %{conn: conn, user: user} do
       user_token = Accounts.generate_user_session_token(user)
 
       conn =
         conn
         |> put_session(:user_token, user_token)
-        |> put_req_cookie(@remember_me_cookie, user_token)
-        |> fetch_cookies()
         |> UserAuth.log_out_user()
 
       refute get_session(conn, :user_token)
-      refute conn.cookies[@remember_me_cookie]
-      assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
       assert redirected_to(conn) == ~p"/"
       refute Accounts.get_user_by_session_token(user_token)
     end
@@ -76,9 +61,8 @@ defmodule MyAppWeb.UserAuthTest do
     end
 
     test "works even if user is already logged out", %{conn: conn} do
-      conn = conn |> fetch_cookies() |> UserAuth.log_out_user()
+      conn = conn |> UserAuth.log_out_user()
       refute get_session(conn, :user_token)
-      assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
       assert redirected_to(conn) == ~p"/"
     end
   end
@@ -88,25 +72,6 @@ defmodule MyAppWeb.UserAuthTest do
       user_token = Accounts.generate_user_session_token(user)
       conn = conn |> put_session(:user_token, user_token) |> UserAuth.fetch_current_user([])
       assert conn.assigns.current_user.id == user.id
-    end
-
-    test "authenticates user from cookies", %{conn: conn, user: user} do
-      logged_in_conn =
-        conn |> fetch_cookies() |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
-
-      user_token = logged_in_conn.cookies[@remember_me_cookie]
-      %{value: signed_token} = logged_in_conn.resp_cookies[@remember_me_cookie]
-
-      conn =
-        conn
-        |> put_req_cookie(@remember_me_cookie, signed_token)
-        |> UserAuth.fetch_current_user([])
-
-      assert conn.assigns.current_user.id == user.id
-      assert get_session(conn, :user_token) == user_token
-
-      assert get_session(conn, :live_socket_id) ==
-               "users_sessions:#{Base.url_encode64(user_token)}"
     end
 
     test "does not authenticate if data is missing", %{conn: conn, user: user} do
@@ -231,7 +196,8 @@ defmodule MyAppWeb.UserAuthTest do
       conn = conn |> fetch_flash() |> UserAuth.require_authenticated_user([])
       assert conn.halted
 
-      assert redirected_to(conn) == ~p"/users/log_in"
+      # TODO: link to correct url
+      assert redirected_to(conn) == "/users/log_in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must log in to access this page."

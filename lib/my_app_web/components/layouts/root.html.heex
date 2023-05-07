@@ -17,14 +17,8 @@
         <li class="text-[0.8125rem] leading-6 text-zinc-900">
           <%= @current_user.email %>
         </li>
-        <li>
-          <.link
-            href={~p"/users/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Settings
-          </.link>
-        </li>
+        <%!--
+        # TODO: link to correct url
         <li>
           <.link
             href={~p"/users/log_out"}
@@ -34,15 +28,10 @@
             Log out
           </.link>
         </li>
+        --%>
       <% else %>
-        <li>
-          <.link
-            href={~p"/users/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Register
-          </.link>
-        </li>
+        <%!--
+        # TODO: link to correct url
         <li>
           <.link
             href={~p"/users/log_in"}
@@ -51,6 +40,7 @@
             Log in
           </.link>
         </li>
+        --%>
       <% end %>
     </ul>
     <%= @inner_content %>

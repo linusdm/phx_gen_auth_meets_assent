@@ -6,13 +6,6 @@ defmodule MyAppWeb.UserAuth do
 
   alias MyApp.Accounts
 
-  # Make the remember me cookie valid for 60 days.
-  # If you want bump or reduce this value, also change
-  # the token expiry itself in UserToken.
-  @max_age 60 * 60 * 24 * 60
-  @remember_me_cookie "_my_app_web_user_remember_me"
-  @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
-
   @doc """
   Logs the user in.
 
@@ -25,23 +18,14 @@ defmodule MyAppWeb.UserAuth do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
-  def log_in_user(conn, user, params \\ %{}) do
+  def log_in_user(conn, user) do
     token = Accounts.generate_user_session_token(user)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
     |> renew_session()
     |> put_token_in_session(token)
-    |> maybe_write_remember_me_cookie(token, params)
     |> redirect(to: user_return_to || signed_in_path(conn))
-  end
-
-  defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
-    put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
-  end
-
-  defp maybe_write_remember_me_cookie(conn, _token, _params) do
-    conn
   end
 
   # This function renews the session ID and erases the whole
@@ -80,32 +64,16 @@ defmodule MyAppWeb.UserAuth do
 
     conn
     |> renew_session()
-    |> delete_resp_cookie(@remember_me_cookie)
     |> redirect(to: ~p"/")
   end
 
   @doc """
-  Authenticates the user by looking into the session
-  and remember me token.
+  Authenticates the user by looking into the session.
   """
   def fetch_current_user(conn, _opts) do
-    {user_token, conn} = ensure_user_token(conn)
+    user_token = get_session(conn, :user_token)
     user = user_token && Accounts.get_user_by_session_token(user_token)
     assign(conn, :current_user, user)
-  end
-
-  defp ensure_user_token(conn) do
-    if token = get_session(conn, :user_token) do
-      {token, conn}
-    else
-      conn = fetch_cookies(conn, signed: [@remember_me_cookie])
-
-      if token = conn.cookies[@remember_me_cookie] do
-        {token, put_token_in_session(conn, token)}
-      else
-        {nil, conn}
-      end
-    end
   end
 
   @doc """
@@ -156,7 +124,8 @@ defmodule MyAppWeb.UserAuth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/users/log_in")
+        # TODO: link to correct url
+        |> Phoenix.LiveView.redirect(to: "/users/log_in")
 
       {:halt, socket}
     end
@@ -206,7 +175,8 @@ defmodule MyAppWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/users/log_in")
+      # TODO: link to correct url
+      |> redirect(to: "/users/log_in")
       |> halt()
     end
   end
