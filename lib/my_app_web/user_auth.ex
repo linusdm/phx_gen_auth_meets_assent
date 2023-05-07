@@ -124,8 +124,7 @@ defmodule MyAppWeb.UserAuth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        # TODO: link to correct url
-        |> Phoenix.LiveView.redirect(to: "/users/log_in")
+        |> Phoenix.LiveView.redirect(to: ~p"/oauth/keycloak")
 
       {:halt, socket}
     end
@@ -175,8 +174,7 @@ defmodule MyAppWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      # TODO: link to correct url
-      |> redirect(to: "/users/log_in")
+      |> redirect(to: ~p"/oauth/keycloak")
       |> halt()
     end
   end

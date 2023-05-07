@@ -29,6 +29,8 @@ config :my_app, MyAppWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :my_app, MyApp.Mailer, adapter: Swoosh.Adapters.Local
 
+config :my_app, MyAppWeb.AuthController, authorization_params: [prompt: "login"]
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

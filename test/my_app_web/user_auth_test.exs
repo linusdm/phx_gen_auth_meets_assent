@@ -196,8 +196,7 @@ defmodule MyAppWeb.UserAuthTest do
       conn = conn |> fetch_flash() |> UserAuth.require_authenticated_user([])
       assert conn.halted
 
-      # TODO: link to correct url
-      assert redirected_to(conn) == "/users/log_in"
+      assert redirected_to(conn) == ~p"/oauth/keycloak"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must log in to access this page."

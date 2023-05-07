@@ -21,6 +21,11 @@ defmodule MyAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    get "/oauth/:provider", AuthController, :request
+    get "/oauth/:provider/callback", AuthController, :callback
+
+    delete "/logout", AuthController, :logout
   end
 
   # Other scopes may use custom stacks.

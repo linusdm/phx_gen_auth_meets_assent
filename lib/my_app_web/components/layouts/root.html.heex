@@ -17,30 +17,24 @@
         <li class="text-[0.8125rem] leading-6 text-zinc-900">
           <%= @current_user.email %>
         </li>
-        <%!--
-        # TODO: link to correct url
         <li>
           <.link
-            href={~p"/users/log_out"}
+            href={~p"/logout"}
             method="delete"
             class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
           >
             Log out
           </.link>
         </li>
-        --%>
       <% else %>
-        <%!--
-        # TODO: link to correct url
         <li>
           <.link
-            href={~p"/users/log_in"}
+            href={~p"/oauth/keycloak"}
             class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
           >
-            Log in
+            Log in with keycloak
           </.link>
         </li>
-        --%>
       <% end %>
     </ul>
     <%= @inner_content %>

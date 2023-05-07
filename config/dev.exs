@@ -65,6 +65,11 @@ config :my_app, MyAppWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :my_app, dev_routes: true
 
+config :my_app, MyAppWeb.AuthController,
+  site: "http://localhost:8080/realms/example_realm",
+  client_id: "example_client",
+  client_secret: "LTZjikYtiEIMW8IjhYAvBM207foP6nOK"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
