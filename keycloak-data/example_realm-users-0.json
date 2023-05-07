@@ -1,0 +1,27 @@
+{
+  "realm" : "example_realm",
+  "users" : [ {
+    "id" : "310ee6ca-51e0-4ffb-84fc-dd150fcd92e9",
+    "createdTimestamp" : 1683461386833,
+    "username" : "example_user",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "Example",
+    "lastName" : "User",
+    "email" : "user@example.com",
+    "credentials" : [ {
+      "id" : "d917beae-ea13-4536-9886-96ef96864e9d",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1683461399216,
+      "secretData" : "{\"value\":\"XrWmuSfdxBRZgZx4LF/byVibmu2B2yXv8irA5ubOTMU=\",\"salt\":\"jU8BVYzVIDy8+JrDMCxwaw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-example_realm" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
